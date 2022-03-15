@@ -22,7 +22,7 @@ import NewestRestaurants from '../components/NewestRestaurants.vue'
 import NewestComments from '../components/NewestComments.vue'
 
 const dummyData = {
-  'restaurants': [
+  restaurants: [
     {
       'id': 49,
       'name': 'Russ Kertzmann',
@@ -214,7 +214,7 @@ const dummyData = {
       }
     }
   ],
-  'comments': [
+  comments: [
     {
       'id': 121,
       'text': 'Placeat velit corrupti laboriosam ex.',
