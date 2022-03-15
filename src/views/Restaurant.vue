@@ -3,13 +3,14 @@
     <h1>餐廳描述頁</h1>
     <restaurant-detail :initial-restaurant="restaurant"/>
     <hr>
-    <!-- 餐廳評論 RestaurantComments -->
+    <restaurant-comments :restaurant-comments="restaurantComments" />
     <!-- 新增評論 CreateComment -->
   </div>
 </template>
 
 <script>
 import RestaurantDetail from '../components/RestaurantDetail.vue'
+import RestaurantComments from '../components/RestaurantComments.vue'
 
 const dummyData = {
   "restaurant": {
@@ -59,7 +60,8 @@ const dummyData = {
 export default {
   name: 'restaurant-show',
   components: {
-    'restaurant-detail': RestaurantDetail
+    'restaurant-detail': RestaurantDetail,
+    'restaurant-comments': RestaurantComments
   },
   data() {
     return {

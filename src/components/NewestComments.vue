@@ -17,17 +17,10 @@
 </template>
 
 <script>
-import moment from 'moment'
+import { fromNowFilter } from '../utils/mixins'
 
 export default {
-  filters: {
-    fromNow(datatime) {
-      if (!datatime) {
-        return '-'
-      }
-      return moment(datatime).fromNow()
-    }
-  },
+  mixins: [fromNowFilter],
   props: {
     comments: {
       type: Array,
