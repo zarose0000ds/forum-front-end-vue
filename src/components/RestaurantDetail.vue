@@ -29,7 +29,9 @@
     </div>
     <div class="col-lg-8">
       <p>{{ restaurant.description }}</p>
-      <a class="btn btn-primary btn-border mr-2" href="#">Dashboard</a>
+      <router-link class="btn btn-primary btn-border mr-2" :to="{ name: 'restaurant-dashboard', params: { id: restaurant.id }}">
+        Dashboard
+      </router-link>
 
       <button type="button" class="btn btn-danger btn-border mr-2" v-if="restaurant.isFavorited" @click="deleteFavorite">
         移除最愛
