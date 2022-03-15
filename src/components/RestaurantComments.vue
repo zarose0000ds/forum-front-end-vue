@@ -4,7 +4,9 @@
 
     <div v-for="comment in restaurantComments" :key="comment.id">
       <blockquote class="blockquote mb-0">
-        <button type="button" class="btn btn-danger float-right" v-if="currentUser.isAdmin">Delete</button>
+        <button type="button" class="btn btn-danger float-right" v-if="currentUser.isAdmin" @click="handleDeleteBtnClick(comment.id)">
+          Delete
+        </button>
         <h3>
           <a href="#">{{ comment.User.name }}</a>
         </h3>
@@ -37,6 +39,12 @@ export default {
     }
   },
   mixins: [fromNowFilter],
+  methods: {
+    handleDeleteBtnClick(commentId) {
+      console.log('handleDeleteBtnClick:', commentId)
+      this.$emit('after-delete-comment', commentId)
+    }
+  },
   props: {
     restaurantComments: {
       type: Array,

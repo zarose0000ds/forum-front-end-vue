@@ -3,14 +3,26 @@
     <h1>餐廳描述頁</h1>
     <restaurant-detail :initial-restaurant="restaurant"/>
     <hr>
-    <restaurant-comments :restaurant-comments="restaurantComments" />
-    <!-- 新增評論 CreateComment -->
+    <restaurant-comments :restaurant-comments="restaurantComments" @after-delete-comment="afterDeleteComment"/>
+    <create-comment :restaurant-id="restaurant.id" @after-create-comment="afterCreateComment"/>
   </div>
 </template>
 
 <script>
 import RestaurantDetail from '../components/RestaurantDetail.vue'
 import RestaurantComments from '../components/RestaurantComments.vue'
+import CreateComment from '../components/CreateComment.vue'
+
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: '管理者',
+    email: 'root@example.com',
+    image: 'https://i.pravatar.cc/300',
+    isAdmin: true
+  },
+  isAuthenticated: true
+}
 
 const dummyData = {
   "restaurant": {
@@ -61,7 +73,8 @@ export default {
   name: 'restaurant-show',
   components: {
     'restaurant-detail': RestaurantDetail,
-    'restaurant-comments': RestaurantComments
+    'restaurant-comments': RestaurantComments,
+    'create-comment': CreateComment
   },
   data() {
     return {
@@ -77,6 +90,7 @@ export default {
         isFavorited: false,
         isLiked: false
       },
+      currentUser: dummyUser.currentUser,
       restaurantComments: []
     }
   },
@@ -101,6 +115,24 @@ export default {
         isLiked: dummyData.isLiked,
       }
       this.restaurantComments = dummyData.restaurant.Comments
+    },
+    afterDeleteComment(commentId) {
+      this.restaurantComments = this.restaurantComments.filter(
+        comment => comment.id !== commentId
+      )
+    },
+    afterCreateComment(payload) {
+      const { commentId, restaurantId, text } = payload
+      this.restaurantComments.push({
+        id: commentId,
+        RestaurantId: restaurantId,
+        User: {
+          id: this.currentUser.id,
+          name: this.currentUser.name
+        },
+        text,
+        createdAt: new Date()
+      })
     }
   }
 }
