@@ -34,11 +34,11 @@
       <button type="button" class="btn btn-danger btn-border mr-2" v-if="restaurant.isFavorited" @click="deleteFavorite">
         移除最愛
       </button>
-      <button type="button" class="btn btn-primary btn-border mr-2" v-if="!restaurant.isFavorited" @click="addFavorite">
+      <button type="button" class="btn btn-primary btn-border mr-2" v-else @click="addFavorite">
         加到最愛
       </button>
       <button type="button" class="btn btn-danger like mr-2" v-if="restaurant.isLiked" @click="deleteLike">Unlike</button>
-      <button type="button" class="btn btn-primary like mr-2" v-if="!restaurant.isLiked" @click="addLike">Like</button>
+      <button type="button" class="btn btn-primary like mr-2" v-else @click="addLike">Like</button>
     </div>
   </div>
 </template>
