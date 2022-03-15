@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { fromNowFilter } from "../utils/mixins";
+import { fromNowFilter } from '../utils/mixins'
 
 export default {
   mixins: [fromNowFilter],
@@ -28,7 +28,7 @@ export default {
       required: true,
     },
   },
-};
+}
 </script>
 
 <style scoped>
