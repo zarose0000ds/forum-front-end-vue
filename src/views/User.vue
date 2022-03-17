@@ -10,9 +10,9 @@
           <followers-card :followers="profile.Followers"/>
         </div>
         <div class="col-md-8">
-          <comments-card />
+          <comments-card :comments="profile.Comments"/>
           <br />
-          <favorited-restaurants />
+          <favorited-restaurants :favorited-restaurants="profile.FavoritedRestaurants"/>
         </div>
       </div>
     </div>
