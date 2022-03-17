@@ -1,7 +1,7 @@
 <template>
   <div class="album py-5 bg-light">
     <div class="container">
-      <profile-card />
+      <profile-card :initial-profile="profile"/>
 
       <div class="row">
         <div class="col-md-4">
@@ -1212,7 +1212,17 @@ export default {
   },
   data() {
     return {
-      profile: {}
+      profile: {
+        id: -1,
+        name: '',
+        email: '',
+        isAdmin: false,
+        image: '',
+        Comments: [],
+        FavoritedRestaurants: [],
+        Followers: [],
+        Followings: []
+      }
     }
   },
   created() {
@@ -1222,6 +1232,17 @@ export default {
   methods: {
     fetchUser(userId) {
       console.log('fetchUser id', userId)
+
+      const { id, name, email, isAdmin, image } = dummyData.profile
+      this.profile.id = id
+      this.profile.name = name
+      this.profile.email = email
+      this.profile.isAdmin = isAdmin
+      this.profile.image = image
+      this.profile.Comments = dummyData.profile.Comments
+      this.profile.FavoritedRestaurants = dummyData.profile.FavoritedRestaurants
+      this.profile.Followers = dummyData.profile.Followers
+      this.profile.Followings = dummyData.profile.Followings
     }
   }
 }
