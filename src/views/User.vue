@@ -5,9 +5,9 @@
 
       <div class="row">
         <div class="col-md-4">
-          <followings-card />
+          <followings-card :followings="profile.Followings"/>
           <br />
-          <followers-card />
+          <followers-card :followers="profile.Followers"/>
         </div>
         <div class="col-md-8">
           <comments-card />
