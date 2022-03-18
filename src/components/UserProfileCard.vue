@@ -19,9 +19,9 @@
             <li><strong>{{ profile.Followers.length }}</strong> followers (追隨者)</li>
           </ul>
           <p>
-            <a href="/users/2/edit" v-if="currentUserId === profile.id">
+            <router-link :to="{ name: 'user-edit', params: { id: profile.id } }" v-if="currentUserId === profile.id">
               <button type="submit" class="btn btn-primary">edit</button>
-            </a>
+            </router-link>
           </p>
         </div>
       </div>
