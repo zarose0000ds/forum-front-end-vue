@@ -9,7 +9,7 @@
       </li>
 
       <li v-for="page in totalPage" :key="page" :class="['page-item', { active: currentPage === page }]">
-        <router-link class="page-link" :to="{name: 'restaurants', query: { categoryId, page }}">
+        <router-link class="page-link" :to="{name: 'restaurants', query: { page, categoryId }}">
           {{ page }}
         </router-link>
       </li>
