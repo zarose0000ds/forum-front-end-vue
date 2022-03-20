@@ -83,6 +83,7 @@ export default {
 
         const { data } = res
         localStorage.setItem('token', data.token)
+        this.$store.commit('setCurrentUser', data.user)
 
         if (data.status !== 'success') {
           throw new Error(data.message)

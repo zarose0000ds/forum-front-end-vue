@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-md-12 mb-3">
-      <h1>J{{ restaurant.name }}</h1>
+      <h1>{{ restaurant.name }}</h1>
       <p class="badge badge-secondary mt-1 mb-3">{{ restaurant.categoryName }}</p>
     </div>
     <div class="col-lg-4">
@@ -33,19 +33,30 @@
         Dashboard
       </router-link>
 
-      <button type="button" class="btn btn-danger btn-border mr-2" v-if="restaurant.isFavorited" @click="deleteFavorite">
+      <button type="button" class="btn btn-danger btn-border mr-2" v-if="restaurant.isFavorited"
+              @click="deleteFavorite(restaurant.id)"
+      >
         移除最愛
       </button>
-      <button type="button" class="btn btn-primary btn-border mr-2" v-else @click="addFavorite">
+      <button type="button" class="btn btn-primary btn-border mr-2" v-else
+              @click="addFavorite(restaurant.id)"
+      >
         加到最愛
       </button>
-      <button type="button" class="btn btn-danger like mr-2" v-if="restaurant.isLiked" @click="deleteLike">Unlike</button>
-      <button type="button" class="btn btn-primary like mr-2" v-else @click="addLike">Like</button>
+      <button type="button" class="btn btn-danger like mr-2" v-if="restaurant.isLiked" @click="deleteLike(restaurant.id)">
+        Unlike
+      </button>
+      <button type="button" class="btn btn-primary like mr-2" v-else @click="addLike(restaurant.id)">
+        Like
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import usersAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
+
 export default {
   props: {
     'initial-restaurant': {
@@ -69,6 +80,14 @@ export default {
       }
     }
   },
+  watch: {
+    initialRestaurant (newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue
+      }
+    }
+  },
   created() {
     this.fetchRestaurant()
   },
@@ -87,17 +106,81 @@ export default {
         isLiked: this.initialRestaurant.isLiked
       }
     },
-    addFavorite() {
-      this.restaurant.isFavorited = true
+    async addFavorite (restaurantId) {
+      try {
+        const { data }= await usersAPI.addFavorite({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant,
+          isFavorited: true
+        }
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入最愛，請稍後再試'
+        })
+        console.log(err)
+      }
     },
-    deleteFavorite() {
-      this.restaurant.isFavorited = false
+    async deleteFavorite (restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteFavorite({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }  
+        this.restaurant = {
+          ...this.restaurant,
+          isFavorited: false
+        }
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除最愛，請稍後再試'
+        })
+        console.log(err)
+      }
     },
-    addLike() {
-      this.restaurant.isLiked = true
+    async addLike (restaurantId) {
+      try {
+        const { data }= await usersAPI.addLike({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant,
+          isLiked: true
+        }
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳加入Like，請稍後再試'
+        })
+        console.log(err)
+      }
     },
-    deleteLike() {
-      this.restaurant.isLiked = false
+    async deleteLike (restaurantId) {
+      try {
+        const { data } = await usersAPI.deleteLike({ restaurantId })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }  
+        this.restaurant = {
+          ...this.restaurant,
+          isLiked: false
+        }
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除Like，請稍後再試'
+        })
+        console.log(err)
+      }
     }
   }
 }
