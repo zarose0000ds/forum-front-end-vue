@@ -5,7 +5,7 @@
           <a href="#">
             <img
               class="card-img"
-              :src="restaurant.image"
+              :src="restaurant.image | emptyImage"
             />
           </a>
         </div>
@@ -38,8 +38,10 @@
 <script>
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
+import { emptyImageFilter } from '../utils/mixins'
 
 export default {
+  mixins: [emptyImageFilter],
   props: {
     initialRestaurant: {
       type: Object,

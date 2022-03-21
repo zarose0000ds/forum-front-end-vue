@@ -2,22 +2,28 @@
   <div class="container py-5">
     <nav-tabs />
     <nav-pills :categories='categories' />
+    <loading-spinner v-if="isLoading" />
+    <template v-else>
+      <div class="row">
+        <restaurant-card
+          v-for='restaurant in restaurants'
+          :key='restaurant.id'
+          :initial-restaurant='restaurant'
+        />
+      </div>
 
-    <div class="row">
-      <restaurant-card
-        v-for='restaurant in restaurants'
-        :key='restaurant.id'
-        :initial-restaurant='restaurant'
+      <restaurant-pag v-if="totalPage.length > 1"
+                      :current-page="currentPage"
+                      :total-page="totalPage"
+                      :previous-page="previousPage"
+                      :next-page="nextPage"
+                      :category-id="categoryId"
       />
-    </div>
 
-    <restaurant-pag v-if="totalPage.length > 1"
-                    :current-page="currentPage"
-                    :total-page="totalPage"
-                    :previous-page="previousPage"
-                    :next-page="nextPage"
-                    :category-id="categoryId"
-    />
+      <div v-if="restaurants.length < 1">
+        此類別目前無餐廳資料
+      </div>
+    </template>
   </div>
 </template>
 
@@ -26,6 +32,7 @@ import Navtabs from '../components/NavTabs.vue'
 import RestaurantCard from '../components/RestaurantCard.vue'
 import RestaurantsNavPills from '../components/RestaurantsNavPills.vue'
 import RestaurantPagination from '../components/RestaurantsPagination.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 import restaurantsAPI from '../apis/restaurants'
 import { Toast } from '../utils/helpers'
 
@@ -35,7 +42,8 @@ export default {
     'nav-tabs': Navtabs,
     'restaurant-card': RestaurantCard,
     'nav-pills': RestaurantsNavPills,
-    'restaurant-pag': RestaurantPagination
+    'restaurant-pag': RestaurantPagination,
+    'loading-spinner' : LoadingSpinner
   },
   data() {
     return {
@@ -45,7 +53,8 @@ export default {
       currentPage: 1,
       totalPage: [],
       previousPage: -1,
-      nextPage: -1
+      nextPage: -1,
+      isLoading: true
     }
   },
   created() {
@@ -82,6 +91,7 @@ export default {
         this.totalPage = totalPage
         this.previousPage = prev
         this.nextPage = next
+        this.isLoading = false
       } catch (err) {
         Toast.fire({
           icon: 'error',

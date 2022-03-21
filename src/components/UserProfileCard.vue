@@ -3,7 +3,7 @@
     <div class="row no-gutters">
       <div class="col-md-4">
         <img
-          :src="profile.image"
+          :src="profile.image | emptyImage"
           width="300px"
           height="300px"
         />
@@ -41,8 +41,10 @@
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
 import { mapState } from 'vuex'
+import { emptyImageFilter } from '../utils/mixins'
 
 export default {
+  mixins: [emptyImageFilter],
   props: {
     initialProfile: {
       type: Object,
