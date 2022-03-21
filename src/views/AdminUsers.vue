@@ -20,10 +20,14 @@
             <template v-else>user</template>
           </td>
           <td>
-            <button type="button" class="btn btn-link" v-if="user.isAdmin" @click.prevent.stop="toggleIsAdmin(user.id)">
+            <button type="button" class="btn btn-link" v-if="user.isAdmin"
+                    @click.prevent.stop="toggleIsAdmin(user.id, user.isAdmin)"
+                    :disabled="user.id === 1"
+            >
               set as user
             </button>
-            <button type="button" class="btn btn-link" v-else @click.prevent.stop="toggleIsAdmin(user.id)">
+            <button type="button" class="btn btn-link" v-else
+                    @click.prevent.stop="toggleIsAdmin(user.id, user.isAdmin)">
               set as admin
             </button>
           </td>
@@ -34,42 +38,10 @@
 </template>
 
 <script>
-import AdminNav from "../components/AdminNav.vue";
-
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$wUW5yEh4x45Xe7psfFf0AeQbuxDnP6lxKO31oUqYok6Lwq59PYH.e",
-      isAdmin: true,
-      image: null,
-      createdAt: "2022-03-10T16:08:42.000Z",
-      updatedAt: "2022-03-10T16:08:42.000Z",
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$TO09I6KDA9E4TwsnOupRweUe0SUIJZaMaPBRQGAKQH5NxRgWOMfsa",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-03-10T16:08:42.000Z",
-      updatedAt: "2022-03-10T16:08:42.000Z",
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$BgqvSHL1LbAop9gNxweJzum1jVNUKVuUnFRiLSS0zmNPlGT0aEjkC",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-03-10T16:08:42.000Z",
-      updatedAt: "2022-03-10T16:08:42.000Z",
-    }
-  ]
-}
+import AdminNav from "../components/AdminNav.vue"
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   name: "admin-users",
@@ -85,20 +57,52 @@ export default {
     this.fetchUsers()
   },
   methods: {
-    fetchUsers() {
-      this.users = dummyData.users
-    },
-    toggleIsAdmin(userId) {
-      this.users = this.users.map(user => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            isAdmin: !user.isAdmin
-          }
+    async fetchUsers() {
+      try {
+        const { data, statusText } = await adminAPI.users.get()
+
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
         }
-        return user
-      })
+
+        this.users = data.users
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得用戶列表，請稍後再試'
+        })
+        console.log(err)
+      }
+    },
+    async toggleIsAdmin(userId, isAdmin) {
+      try {
+        const temp = !isAdmin
+        const { data } = await adminAPI.users.toggleUserRole({ userId, isAdmin: temp.toString() })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.users = this.users.map(user => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              isAdmin: !user.isAdmin
+            }
+          }
+          return user
+        })
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新用戶權限，請稍後再試'
+        })
+        console.log(err)
+      }
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   }
 }
 </script>
