@@ -53,6 +53,17 @@ export default {
       default: false
     }
   },
+  watch: {
+    initialProfile (newValue) {
+      this.profile = {
+        ...this.profile,
+        ...newValue
+      }
+    },
+    initialIsFollowed (newValue) {
+      this.isFollowed = newValue
+    }
+  },
   data() {
     return {
       profile: this.initialProfile,

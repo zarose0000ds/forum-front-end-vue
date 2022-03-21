@@ -33,46 +33,60 @@
         />
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-primary" :disabled="isProcessing">{{ isProcessing ? '處理中...' : 'Submit'}}</button>
     </form>
   </div>
 </template>
 
 <script>
-const dummyData = {
-  user: {
-    id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
-  },
-  isAuthenticated: true
-}
+import usersAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
+  name: 'user-edit',
   data() {
     return {
       user: {
         id: -1,
         name: '',
-        email: '',
         image: '',
-        isAdmin: false
       },
-      isAuthenticated: false
+      isProcessing: false
     }
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id } = to.params
+    this.fetchUser(id)
+    next()
   },
   created() {
     const { id: userId } = this.$route.params
     this.fetchUser(userId)
   },
   methods: {
-    fetchUser(userId) {
-      console.log('fetchUser id:', userId)
+    async fetchUser(userId) {
+      try {
+        if (this.currentUser.id !== Number(userId)) {
+          Toast.fire({
+            icon: 'warning',
+            title: '存取被拒'
+          })
+          return this.$router.push({ name: 'root' })
+        }
 
-      this.user = { ...dummyData.user }
-      this.isAuthenticated = dummyData.isAuthenticated
+        const { data } = await usersAPI.get({ userId })
+
+        this.user.id = data.profile.id
+        this.user.name = data.profile.name
+        this.user.image = data.profile.image
+      } catch (err) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得用戶資料，請稍後再試'
+        })
+        console.log(err)
+      }
     },
     handleFileChange(e) {
       const { files } = e.target
@@ -83,14 +97,46 @@ export default {
       const imgURL = window.URL.createObjectURL(files[0])
       this.user.image = imgURL
     },
-    handleSubmit(e) {
-      const form = e.target
-      const formData = new FormData(form)
+    async handleSubmit(e) {
+      try {
+        if (this.currentUser.id !== this.user.id) {
+          Toast.fire({
+            icon: 'warning',
+            title: '存取被拒'
+          })
+          return this.$router.push({ name: 'root' })
+        }
+        if (!this.user.name.trim()) {
+          Toast.fire({
+            icon: 'warning',
+            title: '名稱不得為空'
+          })
+          return
+        }
 
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ': ' + value)
+        this.isProcessing = true
+
+        const form = e.target
+        const formData = new FormData(form)
+        const { data } = await usersAPI.update({ userId: this.user.id, formData })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        this.$router.push({ name: 'user', params: { id: this.user.id } })
+      } catch (err) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新用戶資料，請稍後再試'
+        })
+        console.log(err)
       }
     }
+  },
+  computed: {
+    ...mapState(['currentUser'])
   }
 }
 </script>
